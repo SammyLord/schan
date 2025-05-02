@@ -1,0 +1,151 @@
+<%- include('../partials/header') %>
+
+<main>
+  <div class="board-header">
+    <h2>/<%= board.id %>/ - <%= board.name %></h2>
+    <p><%= board.description %></p>
+  </div>
+
+  <div class="post-form">
+    <h3>Create a new thread</h3>
+    <form action="/board/<%= board.id %>/thread" method="POST" enctype="multipart/form-data" data-validate-captcha="true">
+      <div class="form-group">
+        <label for="subject">Subject</label>
+        <input type="text" id="subject" name="subject" placeholder="Optional">
+      </div>
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" placeholder="Anonymous">
+      </div>
+      <div class="form-group">
+        <label for="content">Comment</label>
+        <textarea id="content" name="content" placeholder="Type your comment here"></textarea>
+        <div class="post-preview"></div>
+        <div class="markdown-help">
+          <details>
+            <summary>Markdown formatting help</summary>
+            <div class="markdown-help-content">
+              <p>You can use markdown in your posts:</p>
+              <ul>
+                <li><code>**bold**</code> for <strong>bold text</strong></li>
+                <li><code>*italic*</code> for <em>italic text</em></li>
+                <li><code>`inline code`</code> for <code>inline code</code></li>
+                <li><code>~~strikethrough~~</code> for <del>strikethrough</del></li>
+                <li><code># Heading 1</code> for headings</li>
+                <li><code>- item</code> for bullet lists</li>
+                <li><code>1. item</code> for numbered lists</li>
+                <li><code>[link text](https://example.com)</code> for <a href="#">links</a></li>
+                <li><code>```code block```</code> for code blocks</li>
+              </ul>
+              <p>Start a line with <code>></code> for greentext</p>
+            </div>
+          </details>
+        </div>
+      </div>
+      <div class="form-group media-upload-group">
+        <label>Media (choose one or both)</label>
+        <div class="media-upload-options">
+          <div class="media-upload-option">
+            <label for="image">Image/GIF</label>
+            <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/gif,image/webp">
+            <div class="file-preview image-preview"></div>
+          </div>
+          <div class="media-upload-option">
+            <label for="video">Video</label>
+            <input type="file" id="video" name="video" accept="video/mp4,video/webm">
+            <div class="file-preview video-preview"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Captcha -->
+      <div class="form-group">
+        <label for="captcha">Verification (Enter the text shown below)</label>
+        <div class="captcha-container" data-captcha-code="<%= captchaCode %>">
+          <div class="captcha-image"></div>
+          <div class="captcha-row">
+            <input type="text" class="captcha-input" name="captcha" id="captcha" placeholder="Enter captcha" required>
+            <button class="refresh-captcha" type="button">Refresh</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <input type="submit" value="Post">
+      </div>
+    </form>
+  </div>
+
+  <div class="thread-nav">
+    <a href="/">Home</a> / <a href="/board/<%= board.id %>">/<%= board.id %>/</a>
+  </div>
+
+  <div class="threads">
+    <% if (threads.length === 0) { %>
+      <p>No threads yet. Be the first to post!</p>
+    <% } else { %>
+      <% threads.forEach(thread => { %>
+        <div class="thread">
+          <% const op = thread.posts[0]; %>
+          <div class="post op" id="p<%= op.id %>">
+            <div class="post-header">
+              <span class="post-name"><%= op.name %></span>
+              <span class="post-time"><%= moment(op.timestamp).format('MM/DD/YY(ddd)HH:mm:ss') %></span>
+              <a href="/board/<%= board.id %>/thread/<%= thread.id %>" class="post-number">No.<%= op.id %></a>
+            </div>
+            <% if (thread.subject) { %>
+              <div class="post-subject"><%= thread.subject %></div>
+            <% } %>
+            <div class="post-media">
+              <% if (op.image) { %>
+                <img src="<%= op.image %>" alt="‎ " class="post-image">
+              <% } %>
+              <% if (op.video) { %>
+                <video src="<%= op.video %>" alt="‎" controls=true class="post-video"></video>
+              <% } %>
+            </div>
+            <div class="post-content"><%- formatPostContent(op.content) %></div>
+            <div class="post-info">
+              <a href="/board/<%= board.id %>/thread/<%= thread.id %>">
+                <%= thread.postCount - 1 %> <%= thread.postCount - 1 === 1 ? 'reply' : 'replies' %>
+              </a>
+            </div>
+          </div>
+          
+          <% 
+            // Show up to 3 replies, starting from the most recent ones
+            const lastPosts = thread.posts.slice(1).slice(-3); 
+          %>
+          <% lastPosts.forEach(post => { %>
+            <div class="post" id="p<%= post.id %>">
+              <div class="post-header">
+                <span class="post-name"><%= post.name %></span>
+                <span class="post-time"><%= moment(post.timestamp).format('MM/DD/YY(ddd)HH:mm:ss') %></span>
+                <a href="/board/<%= board.id %>/thread/<%= thread.id %>#p<%= post.id %>" class="post-number">No.<%= post.id %></a>
+              </div>
+              <div class="post-media">
+                <% if (post.image) { %>
+                  <img src="<%= post.image %>" alt="‎ " class="post-image">
+                <% } %>
+                <% if (post.video) { %>
+                  <video src="<%= post.video %>" alt="‎ " controls=true class="post-video"></video>
+                <% } %>
+              </div>
+              <div class="post-content"><%- formatPostContent(post.content) %></div>
+            </div>
+          <% }); %>
+          
+          <% if (thread.posts.length > 4) { %>
+            <div class="thread-expand">
+              <a href="/board/<%= board.id %>/thread/<%= thread.id %>">
+                View all <%= thread.posts.length - 1 %> replies
+              </a>
+            </div>
+          <% } %>
+        </div>
+      <% }); %>
+    <% } %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %> 

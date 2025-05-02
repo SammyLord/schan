@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sChan - Simple Imageboard</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header>
+    <h1>sChan</h1>
+    <nav>
+      <a href="/">Home</a>
+      <% 
+      // Show only these important boards in the header
+      const headerBoards = ['b', 'a', 'g', 'p', 'pol', 'foss', 'art'];
+      boards.filter(board => headerBoards.includes(board.id)).forEach(board => { 
+      %>
+        <a href="/board/<%= board.id %>">/<%= board.id %>/ - <%= board.name %></a>
+      <% }); %>
+      <a href="/" class="more-boards">More Boards</a>
+    </nav>
+  </header>
+  
+  <% if (typeof flashMessage !== 'undefined' && flashMessage) { %>
+    <div class="flash-messages">
+      <div class="flash-message <%= flashMessage.type %>"><%= flashMessage.message %></div>
+    </div>
+  <% } %> 

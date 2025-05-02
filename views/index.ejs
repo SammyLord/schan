@@ -1,0 +1,76 @@
+<%- include('partials/header') %>
+
+<main>
+  <section class="welcome">
+    <h2>Welcome to sChan</h2>
+    <p>sChan is a simple imageboard where you can discuss various topics anonymously.</p>
+  </section>
+
+  <section class="board-list">
+    <h3 class="category-header">General</h3>
+    <div class="category-boards">
+      <% boards.filter(board => ['b', 'pol', 'sci', 'food'].includes(board.id)).forEach(board => { %>
+        <div class="board-item">
+          <h3><a href="/board/<%= board.id %>">/<%= board.id %>/ - <%= board.name %></a></h3>
+          <p><%= board.description %></p>
+        </div>
+      <% }); %>
+    </div>
+
+    <h3 class="category-header">Creative</h3>
+    <div class="category-boards">
+      <% boards.filter(board => ['art', 'moozie', 'p'].includes(board.id)).forEach(board => { %>
+        <div class="board-item">
+          <h3><a href="/board/<%= board.id %>">/<%= board.id %>/ - <%= board.name %></a></h3>
+          <p><%= board.description %></p>
+        </div>
+      <% }); %>
+    </div>
+
+    <h3 class="category-header">Technology</h3>
+    <div class="category-boards">
+      <% boards.filter(board => ['g', 'foss', 'appl', 'srcleak'].includes(board.id)).forEach(board => { %>
+        <div class="board-item">
+          <h3><a href="/board/<%= board.id %>">/<%= board.id %>/ - <%= board.name %></a></h3>
+          <p><%= board.description %></p>
+        </div>
+      <% }); %>
+    </div>
+
+    <h3 class="category-header">Interests</h3>
+    <div class="category-boards">
+      <% boards.filter(board => ['a', 'sanrio', 'vocal', 'game', 'leak'].includes(board.id)).forEach(board => { %>
+        <div class="board-item">
+          <h3><a href="/board/<%= board.id %>">/<%= board.id %>/ - <%= board.name %></a></h3>
+          <p><%= board.description %></p>
+        </div>
+      <% }); %>
+    </div>
+
+    <h3 class="category-header">Most likely to contain NSFW content</h3>
+    <div class="category-boards">
+      <% boards.filter(board => ['hen', 'r34', 'coom', 'wtf'].includes(board.id)).forEach(board => { %>
+        <div class="board-item">
+          <h3><a href="/board/<%= board.id %>">/<%= board.id %>/ - <%= board.name %></a></h3>
+          <p><%= board.description %></p>
+        </div>
+      <% }); %>
+    </div>
+  </section>
+
+  <section class="site-info">
+    <h3>About sChan</h3>
+    <p>sChan is a lightweight 4chan-like imageboard built with Express.js and quick.db.</p>
+    <p>Board rules:</p>
+    <ul>
+      <li>Be respectful to others</li>
+      <li>No spamming</li>
+      <li>We don't moderate content much, so please be careful.</li>
+      <li>All boards are NSFW, the ones with *NSFW* in the name are the ones that most likely have the most porn or other NSFW content.</li>
+      <li>Be aged 18 or older.</li>
+      <li>Have fun!</li>
+    </ul>
+  </section>
+</main>
+
+<%- include('partials/footer') %> 
